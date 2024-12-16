@@ -3,14 +3,19 @@ package com.javajags.blogapp.service;
 import com.javajags.blogapp.entity.User;
 import com.javajags.blogapp.payload.UserDto;
 import com.javajags.blogapp.repository.UserRepo;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Service
 public class UserServiceImpl implements UserServiceI{
     @Autowired
     UserRepo userRepo;
-
+    @Autowired
+    ModelMapper modelMapper;
 
     //Method dtoToUser,userToDto used for mapping between DTO class and Entity class.
     public User dtoToUser(UserDto userDto){
@@ -45,10 +50,19 @@ public class UserServiceImpl implements UserServiceI{
         return userToDto(savedUser);
     }
 
-
+    // Update the user field
+    // Save the updatedUser to the Db
+    // Convert the updatedUser to Dto
     @Override
-    public UserDto updateUser(UserDto userDto, Integer userId) {
-        return null;
+    public Optional<UserDto> updateUser(UserDto userDto, Integer userId) {
+        return this.userRepo.findById(userId).map(user -> {
+            user.setName(userDto.getName());
+            user.setEmail(userDto.getEmail());
+            user.setPassword(userDto.getPassword());
+            user.setAbout(userDto.getAbout());
+            User updatedUser = this.userRepo.save(user);
+            return this.modelMapper.map(updatedUser, UserDto.class);
+        });
     }
 
     @Override
