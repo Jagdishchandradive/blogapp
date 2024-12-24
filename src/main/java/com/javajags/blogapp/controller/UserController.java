@@ -31,14 +31,15 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable Integer userId) {
-        logger.info("Request received to update user with ID: {}", userId);
+        logger.info("Request received to update user with ID: {}, payload: {}", userId,userDto);
         Optional<UserDto> updatedUser = this.userServiceI.updateUser(userDto, userId);
 
         return updatedUser.map(userDto1 -> {
-            logger.info("User updated successfully for ID: {}", userId);
+            logger.info("User updated successfully for userID: {}, Updated Data: {}", userId,userDto1);
             return new ResponseEntity<>(userDto1, HttpStatus.OK);
         }).orElseThrow(() -> {
-            logger.error("User not found with ID: {}", userId);
+            String errorMessage = String.format("User with ID %d not found in the database.", userId);
+            logger.error(errorMessage);
             return new ResourceNotFoundException("User", "ID", userId);
         });
     }
