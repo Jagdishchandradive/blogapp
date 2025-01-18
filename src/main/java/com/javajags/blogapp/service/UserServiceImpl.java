@@ -104,8 +104,9 @@ public class UserServiceImpl implements UserServiceI {
     public void deleteUser(Integer userId) {
         logger.info("Request received to delete user with ID: {}", userId);
         User user = this.userRepo.findById(userId)
-                .orElseThrow(() -> {logger.error("User not found with ID: {}", userId);
-                return new ResourceNotFoundException("User", "Id", userId);
+                .orElseThrow(() -> {
+                    logger.error("User not found with ID: {}", userId);
+                    return new ResourceNotFoundException("User", "Id", userId);
                 });
         this.userRepo.delete(user);
         logger.info("User deleted successfully with ID: {}", userId);

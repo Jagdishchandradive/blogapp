@@ -4,6 +4,7 @@ import com.javajags.blogapp.exception.ResourceNotFoundException;
 import com.javajags.blogapp.payload.ApiResponse;
 import com.javajags.blogapp.payload.UserDto;
 import com.javajags.blogapp.service.UserServiceI;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,32 +23,39 @@ public class UserController {
     private UserServiceI userServiceI;
 
     @PostMapping("/create-user")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         logger.info("Request received to create user: {}", userDto);
         UserDto createUserDto = this.userServiceI.createUser(userDto);
         logger.info("User created successfully with ID: {}", createUserDto.getId());
         return new ResponseEntity<>(createUserDto, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable Integer userId) {
-        logger.info("Request received to update user with ID: {}, payload: {}", userId,userDto);
-        Optional<UserDto> updatedUser = this.userServiceI.updateUser(userDto, userId);
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto> getSingleUser(@Valid @PathVariable Integer userId) {
+        logger.info("Request received to update user with ID: {}", userId);
+        return ResponseEntity.ok(this.userServiceI.getUserById(userId));
 
-        return updatedUser.map(userDto1 -> {
-            logger.info("User updated successfully for userID: {}, Updated Data: {}", userId,userDto1);
-            return new ResponseEntity<>(userDto1, HttpStatus.OK);
-        }).orElseThrow(() -> {
-            String errorMessage = String.format("User with ID %d not found in the database.", userId);
-            logger.error(errorMessage);
-            return new ResourceNotFoundException("User", "ID", userId);
-        });
     }
 
     @GetMapping("/get-all-users")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         logger.info("Request received to fetch all users");
         return ResponseEntity.ok(this.userServiceI.getAllUsers());
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto, @PathVariable Integer userId) {
+        logger.info("Request received to update user with ID: {}, payload: {}", userId, userDto);
+        Optional<UserDto> updatedUser = this.userServiceI.updateUser(userDto, userId);
+
+        return updatedUser.map(userDto1 -> {
+            logger.info("User updated successfully for userID: {}, Updated Data: {}", userId, userDto1);
+            return new ResponseEntity<>(userDto1, HttpStatus.OK);
+        }).orElseThrow(() -> {
+            String errorMessage = String.format("User with ID %d not found in the database.", userId);
+            logger.error(errorMessage);
+            return new ResourceNotFoundException("User", "ID", userId);
+        });
     }
 
 
