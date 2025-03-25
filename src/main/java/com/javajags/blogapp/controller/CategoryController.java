@@ -31,6 +31,7 @@ public class CategoryController {
     // get-allCategories
     @GetMapping("/allCategories")
     public ResponseEntity<List<CategoryDto>> getCategories() {
+        logger.info("Request received to fetch all categories");
         List<CategoryDto> categories = this.categoryService.getCategories();
         return ResponseEntity.ok(categories);
     }
@@ -38,17 +39,16 @@ public class CategoryController {
     // get-categoryById
     @GetMapping("/{catId}")
     public ResponseEntity<CategoryDto> getCategory(@PathVariable Integer catId) {
-
+        logger.info("Request received to get single category with ID: {}", catId);
         CategoryDto categoryDto = this.categoryService.getCategory(catId);
-
         return new ResponseEntity<CategoryDto>(categoryDto, HttpStatus.OK);
 
     }
 
     //update-categoryById
     @PutMapping("/{catId}")
-    public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto,
-                                                      @PathVariable Integer catId) {
+    public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto, @PathVariable Integer catId) {
+        logger.info("Request received to update user with ID: {}, payload: {}", catId, categoryDto);
         CategoryDto updatedCategory = this.categoryService.updateCategory(categoryDto, catId);
         return new ResponseEntity<CategoryDto>(updatedCategory, HttpStatus.OK);
     }
@@ -57,19 +57,10 @@ public class CategoryController {
 
     @DeleteMapping("/{catId}")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Integer catId) {
+        logger.info("Request received to delete Category with ID: {}", catId);
         this.categoryService.deleteCategory(catId);
-        return new ResponseEntity<ApiResponse>(new ApiResponse("category is deleted successfully !!", true),
-                HttpStatus.OK);
+        return new ResponseEntity<ApiResponse>(new ApiResponse("category is deleted successfully !!", true), HttpStatus.OK);
     }
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -32,7 +32,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getSingleUser(@Valid @PathVariable Integer userId) {
-        logger.info("Request received to update user with ID: {}", userId);
+        logger.info("Request received to get single user with ID: {}", userId);
         return ResponseEntity.ok(this.userServiceI.getUserById(userId));
 
     }
